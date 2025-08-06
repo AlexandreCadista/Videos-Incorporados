@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player de Vídeo</title>
+    <style>
+        body, html { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #playerContainer { width: 100%; max-width: 600px; margin: 0 auto; }
+        #videoWrapper { position: relative; width: 100%; background-color: #000; }
+        #videoElement { width: 100%; height: auto; display: block; }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; z-index: 20; transition: opacity 0.4s ease; }
+        #overlay .icon { font-size: 48px; background: rgba(255,0,0,0.8); border-radius: 50%; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; color: white; }
+        #overlay .icon::after { content: "▶"; }
+        #overlay .text { color: white; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 3px black; }
+        #progressContainer { height: 10px; background-color: #444; width: 100%; margin-top: 15px; border-radius: 5px; overflow: hidden; }
+        #progressBar { height: 100%; width: 0%; background-color: #FF4500; }
+        #formWrapper { display: none; padding: 30px; text-align: center; margin-top: 20px; background-color: white; border-radius: 8px; }
+        #formWrapper h2 { font-size: 22px; color: #333; }
+        #formWrapper button { padding: 15px; font-size: 18px; font-weight: bold; color: white; background: #FF4500; border: none; border-radius: 30px; cursor: pointer; width: 95%; }
+    </style>
+</head>
+<body>
+    <div id="playerContainer">
+        <div id="videoWrapper">
+            <video id="videoElement" playsinline>
+                <source src="https://raw.githubusercontent.com/AlexandreCadista/Videos-Incorporados/main/letreiro.mp4" type="video/mp4">
+            </video>
+            <div id="overlay"><div class="icon"></div><div class="text">Dê o play</div></div>
+        </div>
+        <div id="progressContainer"><div id="progressBar"></div></div>
+        <div id="formWrapper">
+            <h2>Acesso Liberado</h2>
+            <form id="captureForm"><button type="submit">ACESSAR AGORA</button></form>
+        </div>
+    </div>
+    <script>
+        const video = document.getElementById('videoElement' );
+        const overlay = document.getElementById('overlay');
+        const bar = document.getElementById('progressBar');
+        const form = document.getElementById('formWrapper');
+        let formShown = false;
+        video.style.filter = 'blur(5px)';
+        overlay.addEventListener('click', () => {
+            video.play().then(() => {
+                video.style.filter = 'none';
+                video.controls = true;
+                overlay.style.display = 'none';
+            }).catch(err => console.error("Play bloqueado:", err));
+        });
+        video.addEventListener('timeupdate', () => {
+            if (video.duration) {
+                const progress = (video.currentTime / video.duration) * 100;
+                bar.style.width = progress + '%';
+                if (progress >= 75 && !formShown) {
+                    form.style.display = 'block';
+                    formShown = true;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
